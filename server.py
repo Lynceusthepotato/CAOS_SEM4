@@ -7,25 +7,27 @@ ADDR = (IP, PORT)
 SIZE = 1024
 FORMAT = "utf-8"
 DISCONNECT_MSG = "!BYE"
+LIMIT = 2
 
 clients = []
 
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected")
     connected = True
-    try:
-        while connected:
+    while connected:
+        try:
             msg = conn.recv(SIZE).decode(FORMAT)
             if msg == DISCONNECT_MSG:
-                clients.remove(conn)
+                clients.remove(conn)                    
                 connected = False
             elif not msg:
                 clients.remove(conn)
                 connected = False
             broadcast(msg)
-    except ConnectionResetError as e:
-        print("SOMEONE Disconnected")
-        clients.remove(conn)
+        except:
+            clients.remove(conn)
+            conn.close()
+            break
         
 def send(s, msg):
     s.send(msg.encode(FORMAT))
@@ -39,19 +41,21 @@ def main():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(ADDR)
     server.listen()
+    conns = {server}
     print(f"[LISTENING] Server is listening on {IP}:{PORT}")
     
     while True:
         # Limit the user to only 2 since playing rps
         # For now its only for communication
-        if threading.activeCount() <= 2:
+        if server in conns:
             conn, addr = server.accept()
             clients.append(conn)
-            thread = threading.Thread(target=handle_client, args=(conn, addr))
-            thread.start()
-            print(f"[CONNECTIONS] {threading.activeCount() - 1}")
-        else:
-            server.close()
+            if len(clients) > LIMIT:
+                clients.remove(conn)
+                conn.close()
+        thread = threading.Thread(target=handle_client, args=(conn, addr))
+        thread.start()
+        print(f"[CONNECTIONS] {threading.activeCount() - 1}")
 
 if __name__ == "__main__":
     main()

@@ -12,26 +12,34 @@ DISCONNECT_MSG = "!BYE"
 Messages = []
 
 def recieveMsg(client):
+    connected = True
+    while connected:
+        try:
+            msg = client.recv(SIZE).decode(FORMAT)
+            if msg == DISCONNECT_MSG:
+                connected = False
+            print("New message: ", msg)
+            Messages.append(msg)
+        except:
+            client.close()
+            break
+
+def write(client):
     while True:
-        msg = client.recv(SIZE).decode(FORMAT)
-        print("New message: ", msg)
-        Messages.append(msg)
-            
+        msg = input("> ")
+        if msg == DISCONNECT_MSG:
+            client.close()
+            break
+        client.send(msg.encode(FORMAT))
+           
 def main():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(ADDR)
     print(F"[CONNECTED] Client is connected to {IP}:{PORT}")
     recieve = threading.Thread(target = recieveMsg, args=(client,))
+    writes = threading.Thread(target= write,args=(client,))
     recieve.start()
-    
-    connected = True
-    while connected:
-        msg = input("> ")
-        
-        client.send(msg.encode(FORMAT))
-        
-        if msg == DISCONNECT_MSG:
-            connected = False
+    writes.start()
 
 if __name__ == '__main__':
     main()
