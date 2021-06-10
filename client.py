@@ -16,9 +16,6 @@ def recieveMsg(client):
         msg = client.recv(SIZE).decode(FORMAT)
         print("New message: ", msg)
         Messages.append(msg)
-        
-        for m in Messages:
-            print(m)
             
 def main():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

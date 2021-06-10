@@ -17,6 +17,10 @@ def handle_client(conn, addr):
         while connected:
             msg = conn.recv(SIZE).decode(FORMAT)
             if msg == DISCONNECT_MSG:
+                clients.remove(conn)
+                connected = False
+            elif not msg:
+                clients.remove(conn)
                 connected = False
             broadcast(msg)
     except ConnectionResetError as e:
