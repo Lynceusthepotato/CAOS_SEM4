@@ -8,8 +8,11 @@ SIZE = 1024
 FORMAT = "utf-8"
 DISCONNECT_MSG = "!BYE"
 LIMIT = 2
+STARTPLAY = "!PLAY"
 
 clients = []
+nicknames = []
+playroom = []
 
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected")
@@ -20,12 +23,20 @@ def handle_client(conn, addr):
             if msg == DISCONNECT_MSG:
                 clients.remove(conn)                    
                 connected = False
+            elif msg == STARTPLAY:
+                clients.remove(conn)                    
+                playroom.append(conn)
+                connected = False
             elif not msg:
                 clients.remove(conn)
                 connected = False
             broadcast(msg)
         except:
+            index = clients.index(conn)
+            nickname = nicknames[index]
+            broadcast(f'{nickname} has left the room!')
             clients.remove(conn)
+            nicknames.remove(nickname)
             conn.close()
             break
         
@@ -35,6 +46,27 @@ def send(s, msg):
 def broadcast(msg):
     for c in clients:
         send(c, msg)
+        
+def GAME(conn):
+    index = playroom.index(conn)
+    nickname = nicknames[index]
+    broadcast(f'{nickname} entered the playroom')
+    IPR = True
+    while IPR:
+        try:
+            msg = conn.recv(SIZE).decode(FORMAT)
+            if msg == DISCONNECT_MSG:
+                playroom.remove(conn)
+                IPR = False
+            broadcast(msg)
+        except:
+            index = playroom.index(conn)
+            nickname = nicknames[index]
+            playroom.remove(conn)
+            conn.close()
+            broadcast(f'{nickname} has left the room!')
+            break
+    
 
 def main():
     print(f"[STARTING] Server is starting...")
@@ -49,10 +81,19 @@ def main():
         # For now its only for communication
         if server in conns:
             conn, addr = server.accept()
+            conn.send("NICK".encode(FORMAT))
+            nickname = conn.recv(SIZE).decode(FORMAT)
+            nicknames.append(nickname)
             clients.append(conn)
+            print(f'The nickname of the client is {nickname}')
+            broadcast(f'{nickname} just join the room')
+            conn.send("Connected to the server!".encode(FORMAT))
             if len(clients) > LIMIT:
                 clients.remove(conn)
                 conn.close()
+            if len(playroom) == LIMIT:
+                gameThread = threading.Thread(target=GAME, args= (conn,))
+                gameThread.start()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
         print(f"[CONNECTIONS] {threading.activeCount() - 1}")

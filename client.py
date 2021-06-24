@@ -9,6 +9,7 @@ SIZE = 1024
 FORMAT = "utf-8"
 DISCONNECT_MSG = "!BYE"
 
+clientNickname = input("Type in your nickname! > ")
 Messages = []
 
 def recieveMsg(client):
@@ -16,17 +17,22 @@ def recieveMsg(client):
     while connected:
         try:
             msg = client.recv(SIZE).decode(FORMAT)
-            if msg == DISCONNECT_MSG:
+            if msg == 'NICK':
+                client.send(clientNickname.encode(FORMAT))
+            elif msg == DISCONNECT_MSG:
                 connected = False
-            print("New message: ", msg)
-            Messages.append(msg)
+            else:
+                print("New message: ", msg)
+                Messages.append(msg)
         except:
             client.close()
             break
 
 def write(client):
     while True:
+        # msg = f'{clientNickname}: {input("")}'
         msg = input("> ")
+        # print (msg)
         if msg == DISCONNECT_MSG:
             client.close()
             break
