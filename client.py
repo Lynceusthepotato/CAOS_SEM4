@@ -1,14 +1,16 @@
+import tkinter as tk
+from tkinter import messagebox
 import socket
 import threading
-import os
 
-IP = socket.gethostbyname("localhost")
-PORT = 5050
-ADDR = (IP, PORT)
+# Server config
 SIZE = 1024
-FORMAT = "utf-8"
-DISCONNECT_MSG = "!BYE"
-
+PORT = 5050
+FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = "!DISCONNECT"
+IP = socket.gethostbyname("localhost")
+ADDR = (IP, PORT)
+    
 clientNickname = input("Type in your nickname! > ")
 Messages = []
 
@@ -19,11 +21,9 @@ def recieveMsg(client):
             msg = client.recv(SIZE).decode(FORMAT)
             if msg == 'NICK':
                 client.send(clientNickname.encode(FORMAT))
-            elif msg == DISCONNECT_MSG:
+            elif msg == DISCONNECT_MESSAGE:
                 connected = False
-            else:
-                print("New message: ", msg)
-                Messages.append(msg)
+            print(msg)
         except:
             client.close()
             break
@@ -33,7 +33,7 @@ def write(client):
         # msg = f'{clientNickname}: {input("")}'
         msg = input("> ")
         # print (msg)
-        if msg == DISCONNECT_MSG:
+        if msg == DISCONNECT_MESSAGE:
             client.close()
             break
         client.send(msg.encode(FORMAT))
@@ -41,7 +41,7 @@ def write(client):
 def main():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(ADDR)
-    print(F"[CONNECTED] Client is connected to {IP}:{PORT}")
+    # print(F"[CONNECTED] Client is connected to {IP}:{PORT}")
     recieve = threading.Thread(target = recieveMsg, args=(client,))
     writes = threading.Thread(target= write,args=(client,))
     recieve.start()
