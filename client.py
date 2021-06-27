@@ -23,7 +23,8 @@ def recieveMsg(client):
                 client.send(clientNickname.encode(FORMAT))
             elif msg == DISCONNECT_MESSAGE:
                 connected = False
-            print(msg)
+            else:
+                print(msg)
         except:
             client.close()
             break
