@@ -4,6 +4,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import requests
+import random
+import json
+
 # Bad attempt at web scraping
 # Get chromedriver from https://chromedriver.chromium.org/downloads and put it in the same dir 
 # install beautiful-soup
@@ -18,8 +21,16 @@ protect = 'https://www.cdc.gov/dotw/covid-19/index.html'
 
 def get_symptoms():
     # Symptoms
+    try:
+        with open('output.json', 'r') as file:
+            data = json.load(file)
+            if data['Symptoms']:
+                return data['Symptoms']
+    except(FileNotFoundError):
+        pass
+
     # Scraping
-    driver = webdriver.Chrome(executable_path='chromedriver')
+    driver = webdriver.Chrome(executable_path='chromedriver.exe')
     driver.get(symptoms)
     wait = WebDriverWait(driver, 10)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -38,12 +49,21 @@ def get_symptoms():
 
 def get_whoAreYou():
     # 13.1.About_Anezka_WhoAreYou
-    return 'answers of whoAreYou'
+    response = ["I am Bot", "You can call me Bot"]
+    return random.choice(response)
 
 def get_covidDesc():
     # COVID_Description
+    try:
+        with open('output.json', 'r') as file:
+            data = json.load(file)
+            if data['COVID_Description']:
+                return data['COVID_Description']
+    except(FileNotFoundError):
+        pass
+
      # Scraping
-    driver = webdriver.Chrome(executable_path='chromedriver')
+    driver = webdriver.Chrome(executable_path='chromedriver.exe')
     driver.get(covidDesc)
     wait = WebDriverWait(driver, 10)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -58,12 +78,21 @@ def get_covidDesc():
 
 def get_generalHelp():
     # general_help
-    return 'answers of general help'
+    response = ["If you are still unsure, please seek professional help", "Can you ask the question more in detail?"]
+    return random.choice(response)
 
 def get_treatmentInfoTest():
     # 4.2.Treatment_info
+    try:
+        with open('output.json', 'r') as file:
+            data = json.load(file)
+            if data['4.2.Treatment_info']:
+                return data['4.2.Treatment_info']
+    except(FileNotFoundError):
+        pass
+
      # Scraping
-    driver = webdriver.Chrome(executable_path='chromedriver')
+    driver = webdriver.Chrome(executable_path='chromedriver.exe')
     driver.get(treatmentInfo)
     wait = WebDriverWait(driver, 10)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -87,8 +116,15 @@ def get_treatmentInfoTest():
 
 def get_quarantine():
     # 5.1.Quarantine_what_to_do
+    try:
+        with open('output.json', 'r') as file:
+            data = json.load(file)
+            if data['5.1.Quarantine_what_to_do']:
+                return data['5.1.Quarantine_what_to_do']
+    except(FileNotFoundError):
+        pass
      # Scraping
-    driver = webdriver.Chrome(executable_path='chromedriver')
+    driver = webdriver.Chrome(executable_path='chromedriver.exe')
     driver.get(quarantine)
     wait = WebDriverWait(driver, 10)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -113,14 +149,21 @@ def get_quarantine():
 
 def get_protect():
     # Protecting_Against_Infection
+    try:
+        with open('output.json', 'r') as file:
+            data = json.load(file)
+            if data['Protecting_Against_Infection']:
+                return data['Protecting_Against_Infection']
+    except(FileNotFoundError):
+        pass
     # Scraping
-    driver = webdriver.Chrome(executable_path='chromedriver')
+    driver = webdriver.Chrome(executable_path='chromedriver.exe')
     driver.get(protect)
     wait = WebDriverWait(driver, 10)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     output = ''
 
-    header1 = soup.find('h3', text='Prevention Tips')
+    header1 = soup.find('h2', text='Prevention Tips')
     ul = header1.find_next_siblings('ul', limit=1)
     output = output + '\n' + header1.get_text()
     
@@ -133,7 +176,13 @@ def get_protect():
 
 def get_hate():
     # 13.4.About_Anezka_hate
-    return '13.4.About_Anezka_hate'
+    response = ["Can you tell more about it?", "What do you hate exactly"]
+    return random.choice(response)
+
+def get_gratitude():
+    # Gratitude
+    response = ["Happy to help!", "Any time!", "My pleasure"]
+    return random.choice(response)
 
 def get_caseCount(country):
     # copy from the NN file
@@ -166,7 +215,8 @@ def get_caseCount(country):
 
 def get_greeting():
     # 13.3.About_Anezka_Greeting
-    return '13.3.About_Anezka_Greeting'
+    response = ["Hello", "Hey!", "What can i do for you?"]
+    return random.choice(response)
 
 switcher = {
         '13.1.About_Anezka_WhoAreYou': get_whoAreYou,
@@ -178,7 +228,8 @@ switcher = {
         'general_help': get_generalHelp,
         'COVID_Description': get_covidDesc,
         'Symptoms': get_symptoms,
-        'Case_Count': get_caseCount
+        'Case_Count': get_caseCount,
+        'Gratitude': get_gratitude
     }
 
 def handler(intent, country=[]):
@@ -188,5 +239,12 @@ def handler(intent, country=[]):
     else:
         return func()
 
-
-    
+def dumpFile():
+    jsonOut = {"Symptoms": get_symptoms(),
+    "COVID_Description": get_covidDesc(),
+    "4.2.Treatment_info": get_treatmentInfoTest(),
+    "5.1.Quarantine_what_to_do": get_quarantine(),
+    "Protecting_Against_Infection": get_protect()
+    }
+    with open("output.json", 'w') as file:
+        json.dump(jsonOut, file, indent=4)
