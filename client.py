@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import socket
 import threading
+import sys
 
 # Server config
 SIZE = 1024
@@ -20,11 +21,13 @@ window.title("Client")
 
 #Top Frame
 topFrame = tk.Frame(window)
-labelName = tk.Label(topFrame, text = clientNickname).pack(side=tk.LEFT)
+labelName = tk.Label(topFrame, text = "Name: ").pack(side=tk.LEFT)
 Name = tk.Entry(topFrame)
 Name.pack(side=tk.LEFT)
 btnConnect = tk.Button(topFrame, text="Connect", command=lambda : connect())
 btnConnect.pack(side=tk.LEFT)
+closeBtn = tk.Button(topFrame, text="Close", command=lambda : close())
+closeBtn.pack(side=tk.LEFT)
 topFrame.pack(side=tk.TOP)
 
 #Middle Frame
@@ -52,7 +55,11 @@ def connect():
     else:
         clientNickname = Name.get()
         main()
-        
+
+def close():
+    # I don't understand why it freezes
+    window.destroy()
+    #sys.exit()
 
 def recieveMsg(client):
     connected = True
