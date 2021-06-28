@@ -33,9 +33,8 @@ scrollBar = tk.Scrollbar(middleFrame)
 scrollBar.pack(side=tk.RIGHT, fill=tk.Y)
 tkDisplay = tk.Text(middleFrame, height=20, width=55)
 tkDisplay.pack(side=tk.LEFT, fill=tk.Y, padx=(5, 0))
-tkDisplay.tag_config("tag_your_message", foreground="blue")
 scrollBar.config(command=tkDisplay.yview)
-tkDisplay.config(yscrollcommand=scrollBar.set, background="#F4F6F7", highlightbackground="grey", state="disabled")
+tkDisplay.config(yscrollcommand=scrollBar.set, background="white", highlightbackground="grey", state="disabled")
 middleFrame.pack(side=tk.TOP)
 
 #Bottom Frame
@@ -64,6 +63,9 @@ def recieveMsg(client):
                 client.send(clientNickname.encode(FORMAT))
             elif msg == DISCONNECT_MESSAGE:
                 connected = False
+                client.close()
+                window.destroy()
+                break
             else:
                 texts = tkDisplay.get("1.0", tk.END).strip()
                 tkDisplay.config(state=tk.NORMAL)
@@ -87,9 +89,9 @@ def write(msg):
     
     tkDisplay.config(state=tk.NORMAL)
     if len(texts) < 1:
-        tkDisplay.insert(tk.END, "You->" + msg, "tag_your_message") # no line
+        tkDisplay.insert(tk.END, "You->" + msg) # no line
     else:
-        tkDisplay.insert(tk.END, "\n\n" + "You->" + msg, "tag_your_message")
+        tkDisplay.insert(tk.END, "\n\n" + "You->" + msg)
 
     tkDisplay.config(state=tk.DISABLED)
 
