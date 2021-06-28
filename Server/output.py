@@ -12,6 +12,11 @@ import json
 # install beautiful-soup
 # install selenium
 
+# If you are using Windows, comment the line below this
+path = 'chromedriver'
+
+# If you are using Mac, comment the line below this
+path = 'chromedriver.exe'
 
 symptoms = 'https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html'
 covidDesc = 'https://www.cdc.gov/dotw/covid-19/index.html'
@@ -30,7 +35,7 @@ def get_symptoms():
         pass
 
     # Scraping
-    driver = webdriver.Chrome(executable_path='chromedriver.exe')
+    driver = webdriver.Chrome(executable_path=path)
     driver.get(symptoms)
     wait = WebDriverWait(driver, 10)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -63,7 +68,7 @@ def get_covidDesc():
         pass
 
      # Scraping
-    driver = webdriver.Chrome(executable_path='chromedriver.exe')
+    driver = webdriver.Chrome(executable_path=path)
     driver.get(covidDesc)
     wait = WebDriverWait(driver, 10)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -92,7 +97,7 @@ def get_treatmentInfoTest():
         pass
 
      # Scraping
-    driver = webdriver.Chrome(executable_path='chromedriver.exe')
+    driver = webdriver.Chrome(executable_path=path)
     driver.get(treatmentInfo)
     wait = WebDriverWait(driver, 10)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -124,7 +129,7 @@ def get_quarantine():
     except(FileNotFoundError):
         pass
      # Scraping
-    driver = webdriver.Chrome(executable_path='chromedriver.exe')
+    driver = webdriver.Chrome(executable_path=path)
     driver.get(quarantine)
     wait = WebDriverWait(driver, 10)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -157,7 +162,7 @@ def get_protect():
     except(FileNotFoundError):
         pass
     # Scraping
-    driver = webdriver.Chrome(executable_path='chromedriver.exe')
+    driver = webdriver.Chrome(executable_path=path)
     driver.get(protect)
     wait = WebDriverWait(driver, 10)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
