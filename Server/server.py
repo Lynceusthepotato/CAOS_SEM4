@@ -36,6 +36,7 @@ middleFrame.pack(side=tk.TOP, pady=(5, 0))
 # BOTTOM PART
 boxFrame = tk.Frame(window)
 CLLabel = tk.Label(boxFrame, text="---CLIENT LIST---")
+CLLabel.pack(side=tk.LEFT)
 scrollBar = tk.Scrollbar(boxFrame)
 scrollBar.pack(side=tk.RIGHT, fill=tk.Y)
 tkDisplay = tk.Text(boxFrame, height=15, width=30)
@@ -102,6 +103,7 @@ def handle_client(conn, addr):
             break
         
 def start():
+    global server
     btnStart.config(state=tk.DISABLED)
     btnStop.config(state=tk.NORMAL)
     
@@ -122,6 +124,14 @@ def acceptClient(server):
         # print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
 
 def stop():
+    global server, clients, nicknames
+    for i in range(len(clients)):
+        clients[i].close()
+        del clients[i]
+        del nicknames[i]
+    tkDisplay.config(state=tk.NORMAL)
+    tkDisplay.delete('1.0', tk.END)
+    server.close()
     btnStart.config(state=tk.NORMAL)
     btnStop.config(state=tk.DISABLED)
 

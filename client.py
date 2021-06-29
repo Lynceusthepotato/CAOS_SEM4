@@ -73,6 +73,11 @@ def recieveMsg(client):
                 client.close()
                 window.destroy()
                 break
+            elif not msg:
+                connected = False
+                client.close()
+                window.destroy()
+                break
             else:
                 texts = tkDisplay.get("1.0", tk.END).strip()
                 tkDisplay.config(state=tk.NORMAL)
