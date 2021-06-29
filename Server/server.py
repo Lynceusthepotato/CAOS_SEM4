@@ -19,7 +19,7 @@ window.title("The server")
 
 # TOP PART
 topFrame = tk.Frame(window)
-btnStart = tk.Button(topFrame, text="Connect", command=lambda : start())
+btnStart = tk.Button(topFrame, text="Start", command=lambda : start())
 btnStart.pack(side=tk.LEFT)
 btnStop = tk.Button(topFrame, text="Stop", command=lambda : stop(), state=tk.DISABLED)
 btnStop.pack(side=tk.LEFT)
