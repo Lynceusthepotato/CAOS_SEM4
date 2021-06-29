@@ -72,11 +72,13 @@ def recieveMsg(client):
                 connected = False
                 client.close()
                 window.destroy()
+                print("Connection lost")
                 break
             elif not msg:
                 connected = False
                 client.close()
                 window.destroy()
+                print("Connection lost")
                 break
             else:
                 texts = tkDisplay.get("1.0", tk.END).strip()
@@ -92,6 +94,7 @@ def recieveMsg(client):
         except:
             client.close()
             window.destroy()
+            print("Connection lost")
             break
 
 def write(msg):
